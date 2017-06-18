@@ -1,0 +1,37 @@
+{
+  "name": "re-select",
+  "version": "0.1.0",
+  "description": "Memoized selector library",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --compilers js:babel-register --ui tdd --recursive",
+    "compile": "babel -d lib/ src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theJian/re-select.git"
+  },
+  "keywords": [
+    "react",
+    "redux",
+    "select"
+  ],
+  "author": "theJian<thejianmail@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/theJian/re-select/issues"
+  },
+  "homepage": "https://github.com/theJian/re-select#readme",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-check-es2015-constants": "^6.22.0",
+    "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
+    "babel-plugin-transform-es2015-block-scoping": "^6.24.1",
+    "babel-plugin-transform-es2015-function-name": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
+    "babel-plugin-transform-es2015-parameters": "^6.24.1",
+    "babel-plugin-transform-es2015-spread": "^6.22.0",
+    "babel-register": "^6.24.1",
+    "mocha": "^3.4.2"
+  }
+}
