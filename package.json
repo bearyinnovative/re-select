@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register --ui tdd --recursive",
-    "compile": "babel -d lib/ src/"
+    "compile": "babel -d lib/ src/",
+    "prepublish": "npm test && npm compile"
   },
   "repository": {
     "type": "git",
