@@ -18,7 +18,7 @@ export function defaultMemoize(fn, equalityCheck = defaultEqualityCheck) {
   let lastArgs = null;
   let lastResult = null;
   return function() {
-    if (!areArgumentsShallowEqual(equalityCheck, lastArgs, arguments)) {
+    if (!areArgumentsShallowlyEqual(equalityCheck, lastArgs, arguments)) {
       lastResult = fn.apply(null, arguments);
     }
     lastArgs = arguments
@@ -27,7 +27,6 @@ export function defaultMemoize(fn, equalityCheck = defaultEqualityCheck) {
 }
 
 export const createSelectorCreator = (memoize, memoizeOptions) => fns => {
-  fns = [];
   let recomputations = 0;
   const resultFn = fns[fns.length - 1];
   const dependencies = fns.slice(0, -1);
@@ -44,7 +43,7 @@ export const createSelectorCreator = (memoize, memoizeOptions) => fns => {
     return memoize(function() {
       const params = currentFns.map(fn => fn.apply(null, arguments));
       return next.apply(null, params);
-    }, ...memoizeOptions);
+    }, memoizeOptions);
   }, memoizedResultFn)
 
   selector.resultFn = resultFn;
