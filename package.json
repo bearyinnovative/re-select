@@ -2,11 +2,11 @@
   "name": "re-select",
   "version": "0.1.0",
   "description": "Memoized selector library",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register --ui tdd --recursive",
     "compile": "babel -d lib/ src/",
-    "prepublish": "npm test && npm compile"
+    "prepublish": "npm test && npm run compile"
   },
   "repository": {
     "type": "git",
