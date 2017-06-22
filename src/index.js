@@ -53,7 +53,7 @@ export const createSelectorCreator = (memoize, memoizeOptions) => fns => {
 }
 
 export const createSelectorsCreator = createSelector => selectors => {
-  if (typeof selectors === 'function') {
+  if (Array.isArray(selectors)) {
     return createSelector(selectors);
   }
 
