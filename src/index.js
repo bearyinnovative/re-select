@@ -26,29 +26,28 @@ export function defaultMemoize(fn, equalityCheck = defaultEqualityCheck) {
   }
 }
 
+function makeDependenciesFn(fns, next) {
+  fns = Array.isArray(fns) ? fns : [fns];
+  return function() {
+    const params = fns.map(fn => fn.apply(null, arguments));
+    return next.apply(null, params);
+  }
+}
+
 export const createSelectorCreator = (memoize, memoizeOptions) => fns => {
-  let recomputations = 0;
-  const resultFn = fns[fns.length - 1];
-  const dependencies = fns.slice(0, -1);
+  const initialRecomputations = Array(fns.length).fill(0);
+  let recomputations = initialRecomputations;
 
-  const memoizedResultFn = memoize(
-    function() {
-      recomputations += 1;
-      return resultFn.apply(null, arguments);
-    }
-  )
-
-  const selector = dependencies.reduceRight(function(next, currentFns, index) {
-    currentFns = Array.isArray(currentFns) ? currentFns : [currentFns];
+  const selector = fns.reduceRight(function(next, currentFns, index) {
+    const selectors = next ? makeDependenciesFn(currentFns, next) : currentFns;
     return memoize(function() {
-      const params = currentFns.map(fn => fn.apply(null, arguments));
-      return next.apply(null, params);
+      recomputations[index] += 1;
+      return selectors.apply(null, arguments);
     }, memoizeOptions);
-  }, memoizedResultFn)
+  }, null)
 
-  selector.resultFn = resultFn;
   selector.recomputations = () => recomputations;
-  selector.resetRecomputations = () => recomputations = 0;
+  selector.resetRecomputations = () => recomputations = initialRecomputations;
   return selector;
 }
 
