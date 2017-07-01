@@ -55,4 +55,43 @@ describe('selector', () => {
       assert.equal(selector.recomputations()[2], 1);
     })
   })
+
+  describe('nested selector', () => {
+    let nestedRecomputations = 0;
+
+    const deepNested = [
+      state => state.a,
+      a => a + 1
+    ]
+
+    const nested = [
+      [deepNested],
+      a => {
+        nestedRecomputations += 1;
+        return a * 2
+      }
+    ]
+
+    const selector = createSelector(
+      [
+        [nested, state => state.b],
+        (a, b) => a + b
+      ]
+    )
+
+    const state1 = { a: 2, b: 5 }
+    const state2 = { a: 2, b: 1 }
+
+    it('should return the corrent result', () => {
+      assert.equal(selector(state1), 11);
+    })
+
+    it('should avoid recomputations in nested selectors', () => {
+      assert.equal(nestedRecomputations, 1);
+      assert.equal(selector.recomputations()[1], 1);
+      assert.equal(selector(state2), 7);
+      assert.equal(nestedRecomputations, 1);
+      assert.equal(selector.recomputations()[1], 2);
+    })
+  })
 })

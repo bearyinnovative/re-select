@@ -34,21 +34,37 @@ function makeDependenciesFn(fns, next) {
   }
 }
 
-export const createSelectorCreator = (memoize, memoizeOptions) => fns => {
-  const initialRecomputations = Array(fns.length).fill(0);
-  let recomputations = initialRecomputations;
+function createNestedSelectors(create, fns) {
+  if (Array.isArray(fns)) {
+    return fns.map(fn => Array.isArray(fn) ? create(fn) : fn)
+  }
 
-  const selector = fns.reduceRight(function(next, currentFns, index) {
-    const selectors = next ? makeDependenciesFn(currentFns, next) : currentFns;
-    return memoize(function() {
-      recomputations[index] += 1;
-      return selectors.apply(null, arguments);
-    }, memoizeOptions);
-  }, null)
+  return fns;
+}
 
-  selector.recomputations = () => recomputations;
-  selector.resetRecomputations = () => recomputations = initialRecomputations;
-  return selector;
+export const createSelectorCreator = (memoize, memoizeOptions) => {
+  function createSelector(fns) {
+    const initialRecomputations = Array(fns.length).fill(0);
+    let recomputations = initialRecomputations;
+
+    const selector = fns.reduceRight(function(next, currentFns, index) {
+      currentFns = createNestedSelectors(createSelector, currentFns);
+
+      const selectors = next
+        ? makeDependenciesFn(currentFns, next)
+        : currentFns;
+
+      return memoize(function() {
+        recomputations[index] += 1;
+        return selectors.apply(null, arguments);
+      }, memoizeOptions);
+    }, null)
+
+    selector.recomputations = () => recomputations;
+    selector.resetRecomputations = () => recomputations = initialRecomputations;
+    return selector;
+  }
+  return createSelector;
 }
 
 export const createSelectorsCreator = createSelector => selectors => {
