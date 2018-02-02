@@ -67,19 +67,4 @@ export const createSelectorCreator = (memoize, memoizeOptions) => {
   return createSelector;
 }
 
-export const createSelectorsCreator = createSelector => selectors => {
-  if (Array.isArray(selectors)) {
-    return createSelector(selectors);
-  }
-
-  const keys = Object.keys(selectors);
-  const memoizedSelectors = {};
-  for (let i = keys.length - 1; i >= 0; --i) {
-    const key = keys[i];
-    memoizedSelectors[key] = createSelector(selectors[key])
-  }
-  return memoizedSelectors;
-}
-
 export const createSelector = createSelectorCreator(defaultMemoize);
-export const createSelectors = createSelectorsCreator(createSelector);
