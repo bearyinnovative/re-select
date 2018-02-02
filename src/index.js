@@ -1,27 +1,29 @@
+const identity = a => a;
+
 const defaultEqualityCheck = (a, b) => a === b;
 
-function areArgumentsShallowlyEqual(equalityCheck, prev, next) {
-  if (prev === null || next === null || prev.length !== next.length) {
+function areArgumentsEqual(equalityCheck, a, b) {
+  if (a === null || b === null || a.length !== b.length) {
     return false;
   }
 
-  for (let i = prev.length - 1; i >= 0; --i) {
-    if (!equalityCheck(prev[i], next[i])) {
+  for (let i = a.length - 1; i >= 0; --i) {
+    if (!equalityCheck(a[i], b[i])) {
       return false;
     }
   }
 
-  return true
+  return true;
 }
 
-export function defaultMemoize(fn, equalityCheck = defaultEqualityCheck) {
+export const createMemoizor = (equalityCheck = defaultEqualityCheck) => fn => {
   let lastArgs = null;
   let lastResult = null;
   return function() {
-    if (!areArgumentsShallowlyEqual(equalityCheck, lastArgs, arguments)) {
+    if (!areArgumentsEqual(equalityCheck, lastArgs, arguments)) {
       lastResult = fn.apply(null, arguments);
     }
-    lastArgs = arguments
+    lastArgs = arguments;
     return lastResult;
   }
 }
@@ -42,29 +44,17 @@ function createNestedSelectors(create, fns) {
   return fns;
 }
 
-export const createSelectorCreator = (memoize, memoizeOptions) => {
+export const createSelectorCreator = memoize => {
   function createSelector(fns) {
-    const initialRecomputations = Array(fns.length).fill(0);
-    let recomputations = initialRecomputations;
-
     const selector = fns.reduceRight(function(next, currentFns, index) {
       currentFns = createNestedSelectors(createSelector, currentFns);
+      const dependenciesFn = makeDependenciesFn(currentFns, next)
+      return memoize(dependenciesFn);
+    }, identity)
 
-      const selectors = next
-        ? makeDependenciesFn(currentFns, next)
-        : currentFns;
-
-      return memoize(function() {
-        recomputations[index] += 1;
-        return selectors.apply(null, arguments);
-      }, memoizeOptions);
-    }, null)
-
-    selector.recomputations = () => recomputations;
-    selector.resetRecomputations = () => recomputations = initialRecomputations;
     return selector;
   }
   return createSelector;
 }
 
-export const createSelector = createSelectorCreator(defaultMemoize);
+export const createSelector = createSelectorCreator(createMemoizor());
