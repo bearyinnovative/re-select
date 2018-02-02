@@ -1,4 +1,4 @@
-import { createSelector } from '../src/index.js';
+import { createSelector, createSelectorCreator, createMemoizor } from '../src/index.js';
 const assert = require('assert');
 
 const createCountSelector = fn => {
@@ -116,7 +116,7 @@ describe('nested selector', () => {
     subSelector.resetRecomputations();
   })
 
-  it('should return the corrent result', () => {
+  it('should return the correct result', () => {
     assert.equal(selector(state1), 11);
   })
 
@@ -127,5 +127,54 @@ describe('nested selector', () => {
     assert.equal(selector(state2), 7);
     assert.equal(nestedSubSelector.getRecomputations(), 1);
     assert.equal(subSelector.getRecomputations(), 2);
+  })
+})
+
+describe('custom equals selector', () => {
+  const deepEqual = function(a, b) {
+    if (
+      ( typeof a == 'object' && a != null ) &&
+      ( typeof b == 'object' && b != null )
+    ) {
+      const keysA = Object.keys(a);
+      const keysB = Object.keys(b);
+
+      if (keysA.length !== keysB.length) return false;
+
+      for (let key of keysA) {
+        if (!b.hasOwnProperty(key)) return false;
+        if (!deepEqual(a[key], b[key])) return false;
+      }
+
+      return true;
+    } else
+      return a === b;
+  }
+  const createDeepEqualSelector = createSelectorCreator(createMemoizor(deepEqual));
+
+  const subSelector = createCountSelector(a => a.b);
+  const state1 = { a: { b: 1 } };
+  const state2 = { a: { b: 1 } };
+
+  let selector;
+  beforeEach(function() {
+    selector = createDeepEqualSelector(
+      [
+        state => state.a,
+        subSelector
+      ]
+    )
+    subSelector.resetRecomputations();
+  })
+
+  it('should return the correct result', () => {
+    assert.equal(selector(state1), 1);
+  })
+
+  it('should avoid recomputations', () => {
+    assert.equal(selector(state1), 1);
+    assert.equal(subSelector.getRecomputations(), 1);
+    assert.equal(selector(state2), 1);
+    assert.equal(subSelector.getRecomputations(), 1);
   })
 })
