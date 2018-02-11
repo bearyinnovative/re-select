@@ -1,4 +1,4 @@
-import { createSelector, createSelectorCreator, createMemoizor } from '../src/index.js';
+import createSelector, { createSelectorCreator, createMemoizor } from '../src/index.js';
 const assert = require('assert');
 
 const createCountSelector = fn => {
@@ -51,6 +51,28 @@ describe('basic usage', () => {
     assert.equal(subSelector.getRecomputations(), 1);
     assert.equal(selector(state2), 2);
     assert.equal(subSelector.getRecomputations(), 2);
+  })
+})
+
+describe('plain function selector', () => {
+  const functionSelector = createCountSelector(state => state.a)
+  const state1 = { a: 1 };
+
+  let selector;
+  beforeEach(function() {
+    selector = createSelector(functionSelector);
+    functionSelector.resetRecomputations();
+  })
+
+  it('should return the correct result', () => {
+    assert.equal(selector(state1), 1);
+  })
+
+  it('should avoid recomputations', () => {
+    assert.equal(selector(state1), 1);
+    assert.equal(functionSelector.getRecomputations(), 1);
+    assert.equal(selector(state1), 1);
+    assert.equal(functionSelector.getRecomputations(), 1);
   })
 })
 

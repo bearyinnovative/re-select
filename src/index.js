@@ -1,3 +1,9 @@
+const isObject = a => typeof a == 'object' && a !== null;
+
+const isArray = a => Array.isArray(a);
+
+const isFunction = a => typeof a === 'function';
+
 const identity = a => a;
 
 const defaultEqualityCheck = (a, b) => a === b;
@@ -36,25 +42,58 @@ function makeDependenciesFn(fns, next) {
   }
 }
 
-function createNestedSelectors(create, fns) {
-  if (Array.isArray(fns)) {
-    return fns.map(fn => Array.isArray(fn) ? create(fn) : fn)
+function createNestedSelectors(selectors, next) {
+  return selectors.map(fn => isFunction(fn) ? fn : next(fn))
+}
+
+function normalizeSelector(selector) {
+  if (isArray(selector)) {
+    return selector.map(
+      nestedSelector => (
+        isArray(nestedSelector) ? nestedSelector : [nestedSelector]
+      ).map(normalizeSelector)
+    )
   }
 
-  return fns;
+  if (isObject(selector)) {
+    const objectKeys = Object.keys(selector);
+    return [
+      objectKeys.map(key => normalizeSelector(selector[key])),
+      (...values) => values.reduce(
+        (composition, value, index) => Object.assign(composition, {
+          [objectKeys[index]]: value
+        }),
+        {}
+      )
+    ]
+  }
+
+  if (isFunction(selector)) {
+    return selector;
+  }
+
+  throw new Error(
+    `Invalid value of type ${typeof selector} for creating a selector`
+  );
 }
 
 export const createSelectorCreator = memoize => {
-  function createSelector(fns) {
-    const selector = fns.reduceRight(function(next, currentFns, index) {
-      currentFns = createNestedSelectors(createSelector, currentFns);
-      const dependenciesFn = makeDependenciesFn(currentFns, next)
-      return memoize(dependenciesFn);
-    }, identity)
+  function createSelector(selector) {
+    const selectorNormalized = normalizeSelector(
+      isFunction(selector) ? [selector, identity] : selector
+    )
 
-    return selector;
+    return selectorNormalized.reduceRight(function(next, cur, index) {
+      const dependenciesFn = makeDependenciesFn(
+        createNestedSelectors(cur, createSelector),
+        next
+      );
+      return memoize(dependenciesFn);
+    }, identity);
   }
+
   return createSelector;
 }
 
 export const createSelector = createSelectorCreator(createMemoizor());
+export default createSelector;
