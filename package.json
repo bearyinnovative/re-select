@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register --ui tdd --recursive",
+    "test:cov": "nyc --reporter=text mocha --compilers js:babel-register --ui tdd --recursive",
     "compile": "babel -d lib/ src/",
     "prepublish": "npm test && npm run compile"
   },
@@ -33,6 +34,7 @@
     "babel-plugin-transform-es2015-parameters": "^6.24.1",
     "babel-plugin-transform-es2015-spread": "^6.22.0",
     "babel-register": "^6.24.1",
-    "mocha": "^3.4.2"
+    "mocha": "^3.4.2",
+    "nyc": "^11.4.1"
   }
 }
