@@ -79,7 +79,7 @@ const filteredVisibleTodosSelector = [
 ```
 A very common selector shown in the example above. Instead of calling `createSelector` to create a selector function, you construct an array structure to describe a selector.
 
-Let's take a closer look on how it works.
+Let's take a closer look at how it works.
 
 The selectors consisted of two parts.
 The first element is an array of functions, each of which takes the store as input. The second element is a plain function, it takes the value of selectors in the first element as input. So the first argument it takes will be the result of `getVisibleTodos` and the second will be `getKeyword`. The Values of each element are cached so if the values of one element are the same as previous the following element will not get called and return the previously computed value. In this example, the second element function will not run until the result of `getVisibleTodos` or `getKeyword` changed.
