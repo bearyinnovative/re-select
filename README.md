@@ -2,6 +2,7 @@
 Memoized selector library
 
 [![Travis branch](https://img.shields.io/travis/bearyinnovative/re-select/master.svg?style=flat-square)](https://travis-ci.org/bearyinnovative/re-select)
+[![npm](https://img.shields.io/npm/v/re-select.svg?style=flat-square)](https://www.npmjs.com/package/re-select)
 
 The motivation behind this library is to improve [reselect](https://github.com/reactjs/reselect) usage to be more resilient and concise. By using the new way to construct selectors, you should be able to write selectors that are easier to combine with.
 
