@@ -59,12 +59,12 @@ function normalizeSelector(selector) {
     const objectKeys = Object.keys(selector);
     return [
       objectKeys.map(key => normalizeSelector(selector[key])),
-      (...values) => values.reduce(
+      [(...values) => values.reduce(
         (composition, value, index) => Object.assign(composition, {
           [objectKeys[index]]: value
         }),
         {}
-      )
+      )]
     ]
   }
 
