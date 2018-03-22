@@ -81,8 +81,8 @@ A very common selector shown in the example above. Instead of calling `createSel
 
 Let's take a closer look at how it works.
 
-The selectors consisted of two parts.
-The first element is an array of functions, each of which takes the store as input. The second element is a plain function, it takes the value of selectors in the first element as input. So the first argument it takes will be the result of `getVisibleTodos` and the second will be `getKeyword`. The Values of each element are cached so if the values of one element are the same as previous the following element will not get called and return the previously computed value. In this example, the second element function will not run until the result of `getVisibleTodos` or `getKeyword` changed.
+The selectors consist of two parts.
+The first element is an array of functions, each of which takes the store as input. The second element is a plain function that takes the output values from the first element, as its inputs. So the first argument it takes will be the result of `getVisibleTodos` and the second will be `getKeyword`. The Values of each element are cached, so if all the values of the first elements are the same as previous, the second element will not get called, and instead returns its previously computed value. In this example, the second element function will not run until the result of `getVisibleTodos` or `getKeyword` changes.
 
 ### Nested Selector
 
@@ -96,7 +96,7 @@ const todoAuthorSelector = [
 ]
 ```
 
-A valid selector description can be a function, an array or a plain object(we'll see it later).
+A valid selector description can be a function, an array, or a plain object (we'll see it later).
 
 ### Multiple Pipeline Selector
 
@@ -114,11 +114,11 @@ const todoAuthorSelector = [
 
 You can have even more element in a selector.
 Like what we have known, each element is memorized and each element takes the previous as input.
-You should also notice the second element have not been wrapped in `[]`. It's fine, `[]` is optional when there is only one selector that is **not an array**.
+You should also notice the second element has not been wrapped in `[]`. It's fine, `[]` is optional when there is only one selector that is **not an array**.
 
 ### Structured Selector
 
-When working on a react/redux project, it's a common pattern that selecting data from the redux store and passing it as props to a component. A selector might look like this:
+When working on a react/redux project, it's a common pattern to select data from the redux store and pass it as props to a component. A selector might look like this:
 
 ```JavaScript
 const usernameSelector = state => state.user.name
@@ -133,7 +133,7 @@ connect(createSelector([
 ]))
 ```
 
-It is when structured selectors come into play.
+This is when structured selectors come into play.
 Structured selectors are objects whose properties are a selector. A structured selector equivalent to above can be:
 
 ```JavaScript
@@ -152,7 +152,7 @@ A selector can be a function, an array or a plain object. It determines if the v
 
 ### createMemoizor: equalityCheck => function => memoizedFunction
 
-Passing in an `equalityCheck` function, return a function that transforms a function to the memoized version.
+Passing in an `equalityCheck` function, returns a function that transforms a function to the memoized version.
 
 ### createSelectorCreator: memoize => createSelector
 `createSelectorCreator` takes a `memoize` function as input and returns a customized version of `createSelector`.
