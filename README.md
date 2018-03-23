@@ -81,8 +81,8 @@ A very common selector shown in the example above. Instead of calling `createSel
 
 Let's take a closer look at how it works.
 
-The selectors consisted of two parts.
-The first element is an array of functions, each of which takes the store as input. The second element is a plain function, it takes the value of selectors in the first element as input. So the first argument it takes will be the result of `getVisibleTodos` and the second will be `getKeyword`. The Values of each element are cached so if the values of one element are the same as previous the following element will not get called and return the previously computed value. In this example, the second element function will not run until the result of `getVisibleTodos` or `getKeyword` changed.
+The selectors consist of two parts.
+The first element is an array of functions, each of which takes the store as input. The second element is a plain function that takes the output values from the first element, as its inputs. So the first argument it takes will be the result of `getVisibleTodos` and the second will be `getKeyword`. The Values of each element are cached, so if all the values of the first elements are the same as previous, the second element will not get called, and instead returns its previously computed value. In this example, the second element function will not run until the result of `getVisibleTodos` or `getKeyword` changes.
 
 ### Nested Selector
 
@@ -96,7 +96,7 @@ const todoAuthorSelector = [
 ]
 ```
 
-A valid selector description can be a function, an array or a plain object(we'll see it later).
+A valid selector description can be a function, an array, or a plain object (we'll see it later).
 
 ### Multiple Pipeline Selector
 
