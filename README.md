@@ -145,16 +145,23 @@ connect(createSelector({
 
 ## API
 
-### createSelector: selector => memoizedFunction
+### createSelector
+
+`selector → memoizedFunction`
 
 Takes one selector, return a memoized function.
 A selector can be a function, an array or a plain object. It determines if the value has changed using reference equality(`===`).
 
-### createMemoizor: equalityCheck => function => memoizedFunction
+### createMemoizor
+
+`equalityCheck → function → memoizedFunction`
 
 Passing in an `equalityCheck` function, returns a function that transforms a function to the memoized version.
 
-### createSelectorCreator: memoize => createSelector
+### createSelectorCreator
+
+`memoize → createSelector`
+
 `createSelectorCreator` takes a `memoize` function as input and returns a customized version of `createSelector`.
 
 Here is an example for using [`Immutable.is`](https://facebook.github.io/immutable-js/docs/#/is) as `equalityCheck`
